@@ -16,6 +16,12 @@ pub struct ScaledPixelCamera {
     pub camera_2d: Camera2d,
 }
 
+impl Default for ScaledPixelCamera {
+    fn default() -> Self {
+        Self::from_resolution(256, 224)
+    }
+}
+
 impl ScaledPixelCamera {
     /// Create a component bundle for a camera with the specified projection.
     pub fn new(pixel_projection: ScaledPixelProjection) -> Self {

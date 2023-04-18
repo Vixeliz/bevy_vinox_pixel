@@ -3,7 +3,7 @@ use bevy::render::camera::{RenderTarget, Viewport};
 use bevy::render::render_resource::{
     Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
 };
-use bevy::render::texture::ImageSampler;
+use bevy::render::texture::{BevyDefault, ImageSampler};
 use bevy::render::view::RenderLayers;
 use bevy::window::PrimaryWindow;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
@@ -11,7 +11,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 /// This is for cameras that you want things to render to a texture then be scaled.
 /// size is the size of the virtual canvas and fixed is whether or not to let it grow in a certain direction.
 /// Ie a fixed height camera but is allowed to scale horizontally would go like fixed_axis: Some(false). the bool is for which axis. false being its fixed vertically true being fixed horizontally
-#[derive(Component, Clone, Copy)]
+#[derive(Component)]
 pub struct TexturePixelCamera {
     pub size: UVec2,
     pub fixed_axis: Option<bool>,
@@ -77,12 +77,12 @@ impl TexturePixelCamera {
 
 pub fn setup_camera(
     mut commands: Commands,
-    mut camera: Query<(&mut TexturePixelCamera, &mut Camera, &mut Camera2d, Entity)>,
+    mut camera: Query<(&mut TexturePixelCamera, Entity)>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut images: ResMut<Assets<Image>>,
 ) {
-    for (mut pixel_camera, mut camera, mut camera_2d, entity) in camera.iter_mut() {
+    for (mut pixel_camera, entity) in camera.iter_mut() {
         if !pixel_camera.init {
             pixel_camera.init = true;
             let size = Extent3d {
@@ -97,7 +97,7 @@ pub fn setup_camera(
                     label: None,
                     size,
                     dimension: TextureDimension::D2,
-                    format: TextureFormat::Bgra8UnormSrgb,
+                    format: TextureFormat::bevy_default(),
                     mip_level_count: 1,
                     sample_count: 1,
                     usage: TextureUsages::TEXTURE_BINDING
@@ -115,8 +115,20 @@ pub fn setup_camera(
             let image_handle = images.add(image);
 
             // The camera we are actually rendering to
-            camera.target = RenderTarget::Image(image_handle.clone());
-            camera_2d.clear_color = ClearColorConfig::Custom(pixel_camera.clear_color);
+            commands.entity(entity).insert((
+                CameraTag,
+                UiCameraConfig { show_ui: false },
+                Camera2dBundle {
+                    camera: Camera {
+                        target: RenderTarget::Image(image_handle.clone()),
+                        ..default()
+                    },
+                    camera_2d: Camera2d {
+                        clear_color: ClearColorConfig::Custom(pixel_camera.clear_color),
+                    },
+                    ..Default::default()
+                },
+            ));
 
             commands
                 .entity(entity)
@@ -144,27 +156,25 @@ pub fn setup_camera(
                 RenderImage,
             ));
 
-            let final_camera = commands
-                .spawn((
-                    Camera2dBundle {
-                        camera: Camera {
-                            viewport: Some(Viewport {
-                                physical_size: UVec2 {
-                                    x: pixel_camera.size.x,
-                                    y: pixel_camera.size.y,
-                                },
-                                ..Default::default()
-                            }),
-                            // renders after the first main camera which has default value: 0.
-                            order: 1,
-                            ..default()
-                        },
-                        ..Camera2dBundle::default()
+            commands.spawn((
+                Camera2dBundle {
+                    camera: Camera {
+                        viewport: Some(Viewport {
+                            physical_size: UVec2 {
+                                x: pixel_camera.size.x,
+                                y: pixel_camera.size.y,
+                            },
+                            ..Default::default()
+                        }),
+                        // renders after the first main camera which has default value: 0.
+                        order: 1,
+                        ..default()
                     },
-                    render_layer,
-                    FinalCameraTag,
-                ))
-                .id();
+                    ..Camera2dBundle::default()
+                },
+                render_layer,
+                FinalCameraTag,
+            ));
 
             // commands.entity(entity).push_children(&[final_camera]);
         }
@@ -187,15 +197,15 @@ pub fn scale_render_image(
                         || window.physical_height() as f32 * aspect_ratio
                             > window.physical_width() as f32
                     {
-                        UVec2 {
-                            x: window.physical_width(),
-                            y: (window.physical_width() as f32 / aspect_ratio).floor() as u32,
-                        }
+                        UVec2::new(
+                            window.physical_width(),
+                            (window.physical_width() as f32 / aspect_ratio).floor() as u32,
+                        )
                     } else {
-                        UVec2 {
-                            x: (window.physical_height() as f32 * aspect_ratio).floor() as u32,
-                            y: window.physical_height(),
-                        }
+                        UVec2::new(
+                            (window.physical_height() as f32 * aspect_ratio).floor() as u32,
+                            window.physical_height(),
+                        )
                     };
 
                     let scale_width = window_size.x as f32 / screen_width as f32;
@@ -208,7 +218,7 @@ pub fn scale_render_image(
                         if let Some(height) =
                             (window.physical_height() / 2).checked_sub(window_size.y / 2)
                         {
-                            UVec2 { x: 0, y: height }
+                            UVec2::new(0, height)
                         } else {
                             UVec2::ZERO
                         }
@@ -216,17 +226,14 @@ pub fn scale_render_image(
                         if let Some(width) =
                             (window.physical_width() / 2).checked_sub(window_size.x / 2)
                         {
-                            UVec2 { x: width, y: 0 }
+                            UVec2::new(width, 0)
                         } else {
                             UVec2::ZERO
                         }
                     };
 
-                    texture_transform.scale = Vec3 {
-                        x: scale_width as f32,
-                        y: scale_height as f32,
-                        z: 1.0,
-                    };
+                    texture_transform.scale =
+                        Vec3::new(scale_width as f32, scale_height as f32, 1.0);
 
                     camera.viewport = Some(Viewport {
                         physical_size: window_size,
