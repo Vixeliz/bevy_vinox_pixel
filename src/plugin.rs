@@ -11,6 +11,7 @@ impl Plugin for PixelPlugin {
         )
         .add_system(crate::texture::setup_camera.in_base_set(CoreSet::PostUpdate))
         // .add_system(crate::texture::scale_render_image.in_base_set(CoreSet::PostUpdate));
-        .add_system(crate::texture::scale_render_image);
+        .add_system(crate::texture::scale_render_image)
+        .add_system(crate::scaled::update_scaled_viewport);
     }
 }

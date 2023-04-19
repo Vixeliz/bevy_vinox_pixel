@@ -66,7 +66,7 @@ impl TexturePixelCamera {
             init: false,
         }
     }
-    pub fn from_size(width: u32, height: u32) -> Self {
+    pub fn from_resolution(width: u32, height: u32) -> Self {
         Self {
             size: UVec2::new(width, height),
             fixed_axis: None,

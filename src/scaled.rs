@@ -1,7 +1,8 @@
 use bevy::prelude::*;
-use bevy::render::camera::{Camera, CameraProjection, CameraRenderGraph};
+use bevy::render::camera::{Camera, CameraProjection, CameraRenderGraph, Viewport};
 use bevy::render::primitives::Frustum;
 use bevy::render::view::VisibleEntities;
+use bevy::window::PrimaryWindow;
 
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
 /// The advantage of this camera is smoother scrolling, rotation, etc
@@ -19,7 +20,7 @@ pub struct ScaledPixelCamera {
 
 impl Default for ScaledPixelCamera {
     fn default() -> Self {
-        Self::from_resolution(256, 224)
+        Self::from_resolution(256, 224, false)
     }
 }
 
@@ -50,37 +51,48 @@ impl ScaledPixelCamera {
 
     /// Create a component bundle for a camera where the size of virtual pixels
     /// are specified with `zoom`.
-    pub fn from_zoom(zoom: i32) -> Self {
-        Self::new(ScaledPixelProjection {
-            zoom,
-            ..Default::default()
-        })
+    pub fn from_zoom(zoom: f32) -> Self {
+        if zoom.round() == zoom {
+            Self::new(ScaledPixelProjection {
+                zoom,
+                ..Default::default()
+            })
+        } else {
+            Self::new(ScaledPixelProjection {
+                zoom,
+                imperfect: true,
+                ..Default::default()
+            })
+        }
     }
 
     /// Create a component bundle for a camera where the size of virtual pixels
     /// is automatically set to fit the specified resolution inside the window.
-    pub fn from_resolution(width: i32, height: i32) -> Self {
+    pub fn from_resolution(width: i32, height: i32, imperfect: bool) -> Self {
         Self::new(ScaledPixelProjection {
             desired_width: Some(width),
             desired_height: Some(height),
+            imperfect,
             ..Default::default()
         })
     }
 
     /// Create a component bundle for a camera where the size of virtual pixels
     /// is automatically set to fit the specified width inside the window.
-    pub fn from_width(width: i32) -> Self {
+    pub fn from_width(width: i32, imperfect: bool) -> Self {
         Self::new(ScaledPixelProjection {
             desired_width: Some(width),
+            imperfect,
             ..Default::default()
         })
     }
 
     /// Create a component bundle for a camera where the size of virtual pixels
     /// is automatically set to fit the specified height inside the window.
-    pub fn from_height(height: i32) -> Self {
+    pub fn from_height(height: i32, imperfect: bool) -> Self {
         Self::new(ScaledPixelProjection {
             desired_height: Some(height),
+            imperfect,
             ..Default::default()
         })
     }
@@ -111,11 +123,14 @@ pub struct ScaledPixelProjection {
 
     /// If neither `desired_width` nor `desired_height` are present, zoom can be
     /// manually set. The value detemines the size of the virtual pixels.
-    pub zoom: i32,
+    pub zoom: f32,
 
     /// If true, (0, 0) is the pixel closest to the center of the window,
     /// otherwise it's at bottom left.
     pub centered: bool,
+
+    /// If true pixels don't have to be an integer value and can be instead a float
+    pub imperfect: bool,
 }
 
 impl CameraProjection for ScaledPixelProjection {
@@ -136,20 +151,23 @@ impl CameraProjection for ScaledPixelProjection {
         let mut zoom_x = None;
         if let Some(desired_width) = self.desired_width {
             if desired_width > 0 {
-                zoom_x = Some((width as i32) / desired_width);
+                zoom_x = Some(width / desired_width as f32);
             }
         }
         let mut zoom_y = None;
         if let Some(desired_height) = self.desired_height {
             if desired_height > 0 {
-                zoom_y = Some((height as i32) / desired_height);
+                zoom_y = Some(height / desired_height as f32);
             }
         }
         match (zoom_x, zoom_y) {
-            (Some(zoom_x), Some(zoom_y)) => self.zoom = zoom_x.min(zoom_y).max(1),
-            (Some(zoom_x), None) => self.zoom = zoom_x.max(1),
-            (None, Some(zoom_y)) => self.zoom = zoom_y.max(1),
+            (Some(zoom_x), Some(zoom_y)) => self.zoom = zoom_x.min(zoom_y).max(1.0),
+            (Some(zoom_x), None) => self.zoom = zoom_x.max(1.0),
+            (None, Some(zoom_y)) => self.zoom = zoom_y.max(1.0),
             (None, None) => (),
+        }
+        if !self.imperfect {
+            self.zoom = self.zoom.round();
         }
 
         let actual_width = width / (self.zoom as f32);
@@ -183,8 +201,59 @@ impl Default for ScaledPixelProjection {
             far: 1000.0,
             desired_width: None,
             desired_height: None,
-            zoom: 1,
+            zoom: 1.0,
             centered: true,
+            imperfect: false,
+        }
+    }
+}
+
+pub fn update_scaled_viewport(
+    mut camera_query: Query<(&mut Camera, &ScaledPixelProjection)>,
+    mut windows: Query<&mut Window, With<PrimaryWindow>>,
+) {
+    if let Ok(window) = windows.get_single_mut() {
+        for (mut camera, projection) in camera_query.iter_mut() {
+            let screen_width = projection.desired_width.map(|w| w as f32).unwrap_or(0.0);
+            let screen_height = projection.desired_height.map(|h| h as f32).unwrap_or(0.0);
+            let aspect_ratio = screen_width as f32 / screen_height as f32;
+            let window_size: UVec2 = if window.physical_height() > window.physical_width()
+                || window.physical_height() as f32 * aspect_ratio > window.physical_width() as f32
+            {
+                UVec2::new(
+                    window.physical_width(),
+                    (window.physical_width() as f32 / aspect_ratio).floor() as u32,
+                )
+            } else {
+                UVec2::new(
+                    (window.physical_height() as f32 * aspect_ratio).floor() as u32,
+                    window.physical_height(),
+                )
+            };
+
+            // let scale_width = window_size.x as f32 / screen_width as f32;
+            // let scale_height = window_size.y as f32 / screen_height as f32;
+            let window_position: UVec2 = if window.physical_height() > window.physical_width()
+                || window.physical_height() as f32 * aspect_ratio > window.physical_width() as f32
+            {
+                if let Some(height) = (window.physical_height() / 2).checked_sub(window_size.y / 2)
+                {
+                    UVec2::new(0, height)
+                } else {
+                    UVec2::ZERO
+                }
+            } else {
+                if let Some(width) = (window.physical_width() / 2).checked_sub(window_size.x / 2) {
+                    UVec2::new(width, 0)
+                } else {
+                    UVec2::ZERO
+                }
+            };
+            camera.viewport = Some(Viewport {
+                physical_size: window_size,
+                physical_position: window_position,
+                ..Default::default()
+            });
         }
     }
 }
