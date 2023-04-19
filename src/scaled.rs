@@ -4,6 +4,7 @@ use bevy::render::primitives::Frustum;
 use bevy::render::view::VisibleEntities;
 
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
+/// The advantage of this camera is smoother scrolling, rotation, etc
 #[derive(Bundle)]
 pub struct ScaledPixelCamera {
     pub camera: Camera,

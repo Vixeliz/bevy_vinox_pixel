@@ -11,6 +11,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 /// This is for cameras that you want things to render to a texture then be scaled.
 /// size is the size of the virtual canvas and fixed is whether or not to let it grow in a certain direction.
 /// Ie a fixed height camera but is allowed to scale horizontally would go like fixed_axis: Some(false). the bool is for which axis. false being its fixed vertically true being fixed horizontally
+/// The advantage of this camera is anything you draw will be pixelized including 3d assets. And one may see the retro look of less smooth scrolling more appealing.
 #[derive(Component)]
 pub struct TexturePixelCamera {
     pub size: UVec2,

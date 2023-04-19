@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_pixel::{prelude::*, texture::TexturePixelCamera};
+use bevy_pixel::prelude::*;
 
 fn main() {
     App::new()

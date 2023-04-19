@@ -5,4 +5,6 @@ pub mod texture;
 
 pub mod prelude {
     pub use crate::plugin::PixelPlugin;
+    pub use crate::scaled::ScaledPixelCamera;
+    pub use crate::texture::TexturePixelCamera;
 }
