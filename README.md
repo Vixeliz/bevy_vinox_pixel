@@ -3,7 +3,7 @@
 A crate for pixel art games in bevy.
 
 The goal of this crate is to provide tools commonly needed in pixel art games in an easy to use crate.
-Here is a list of features and planned features:
+Here is a list of features(Indicated by being crossed out) and planned features:
 * ~Cameras~ _I need to cleanup the texture version a little bit though_
 * Runtime Pixelated Sprites(such as 3d objects or procedural generated assets)
 * Pixel ui system for games that need it.
@@ -14,6 +14,8 @@ Here is a list of features and planned features:
 * A more abstracted layer system so you don't have to manually choose z depths.
 * Optional limitations? Such as an option to limit sprite count to emulate more limited systems.
 * Optional abstracted positions. Ie a px position which will always correspond to the pixel grid. And another type subpxposition. (This idea is straight from seldom_pixel)
+
+Please open issues for more feature suggestions if you have any!
 
 Thanks to [bevy_pixel_camera](https://github.com/drakmaniso/bevy_pixel_camera) for both the approach shown there and for how to setup a custom camera.
 also thanks to [seldom_pixel](https://github.com/Seldom-SE/seldom_pixel) for some of the ideas 
