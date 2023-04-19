@@ -2,6 +2,9 @@ use bevy::{prelude::*, render::camera};
 
 use crate::scaled::ScaledPixelProjection;
 
+#[derive(Component)]
+pub struct PixelCameraTag;
+
 pub struct PixelPlugin;
 
 impl Plugin for PixelPlugin {

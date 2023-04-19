@@ -1,4 +1,4 @@
-use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
+use bevy::prelude::*;
 use bevy_pixel::prelude::*;
 
 fn main() {
@@ -6,7 +6,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugin(PixelPlugin)
         .add_startup_system(setup)
-        .add_system(rotate_sprite)
+        .add_systems((rotate_sprite, movement))
         .run();
 }
 
@@ -39,5 +39,28 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn rotate_sprite(mut rotate_query: Query<&mut Transform, With<Rotate>>, time: Res<Time>) {
     for mut transform in rotate_query.iter_mut() {
         transform.rotate_z(1.5 * time.delta_seconds());
+    }
+}
+
+// Both cameras use a cameratag for easy selection of the right camera
+fn movement(
+    mut transform_query: Query<&mut Transform, With<PixelCameraTag>>,
+    keys: Res<Input<KeyCode>>,
+    time: Res<Time>,
+) {
+    if let Ok(mut transform) = transform_query.get_single_mut() {
+        let dt = time.delta_seconds();
+        if keys.pressed(KeyCode::W) {
+            transform.translation.y += 50.0 * dt;
+        }
+        if keys.pressed(KeyCode::S) {
+            transform.translation.y -= 50.0 * dt;
+        }
+        if keys.pressed(KeyCode::D) {
+            transform.translation.x += 50.0 * dt;
+        }
+        if keys.pressed(KeyCode::A) {
+            transform.translation.x -= 50.0 * dt;
+        }
     }
 }

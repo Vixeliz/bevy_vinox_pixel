@@ -8,6 +8,8 @@ use bevy::render::view::RenderLayers;
 use bevy::window::PrimaryWindow;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
+use crate::plugin::PixelCameraTag;
+
 /// This is for cameras that you want things to render to a texture then be scaled.
 /// size is the size of the virtual canvas and fixed is whether or not to let it grow in a certain direction.
 /// Ie a fixed height camera but is allowed to scale horizontally would go like fixed_axis: Some(false). the bool is for which axis. false being its fixed vertically true being fixed horizontally
@@ -22,9 +24,6 @@ pub struct TexturePixelCamera {
 
 #[derive(Component)]
 pub struct RenderImage;
-
-#[derive(Component)]
-pub struct CameraTag;
 
 #[derive(Component)]
 pub struct FinalCameraTag;
@@ -117,7 +116,7 @@ pub fn setup_camera(
 
             // The camera we are actually rendering to
             commands.entity(entity).insert((
-                CameraTag,
+                PixelCameraTag,
                 UiCameraConfig { show_ui: false },
                 Camera2dBundle {
                     camera: Camera {
@@ -133,7 +132,7 @@ pub fn setup_camera(
 
             commands
                 .entity(entity)
-                .insert((CameraTag, UiCameraConfig { show_ui: false }));
+                .insert((PixelCameraTag, UiCameraConfig { show_ui: false }));
 
             let render_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
 
@@ -185,7 +184,7 @@ pub fn setup_camera(
 pub fn scale_render_image(
     mut texture_query: Query<&mut Transform, With<RenderImage>>,
     mut camera_query: Query<&mut bevy::render::camera::Camera, With<FinalCameraTag>>,
-    mut pixel_camera_query: Query<&TexturePixelCamera, With<CameraTag>>,
+    mut pixel_camera_query: Query<&TexturePixelCamera, With<PixelCameraTag>>,
     mut windows: Query<&mut Window, With<PrimaryWindow>>,
 ) {
     if let Ok(mut texture_transform) = texture_query.get_single_mut() {

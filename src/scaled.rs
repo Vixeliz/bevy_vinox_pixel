@@ -4,11 +4,14 @@ use bevy::render::primitives::Frustum;
 use bevy::render::view::VisibleEntities;
 use bevy::window::PrimaryWindow;
 
+use crate::plugin::PixelCameraTag;
+
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
 /// The advantage of this camera is smoother scrolling, rotation, etc
 #[derive(Bundle)]
 pub struct ScaledPixelCamera {
     pub camera: Camera,
+    pub camera_tag: PixelCameraTag,
     pub camera_render_graph: CameraRenderGraph,
     pub pixel_projection: ScaledPixelProjection,
     pub visible_entities: VisibleEntities,
@@ -45,6 +48,7 @@ impl ScaledPixelCamera {
             transform,
             global_transform: Default::default(),
             camera: Camera::default(),
+            camera_tag: PixelCameraTag,
             camera_2d: Camera2d::default(),
         }
     }
