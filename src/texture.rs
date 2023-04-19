@@ -222,18 +222,15 @@ pub fn scale_render_image(
                         } else {
                             UVec2::ZERO
                         }
+                    } else if let Some(width) =
+                        (window.physical_width() / 2).checked_sub(window_size.x / 2)
+                    {
+                        UVec2::new(width, 0)
                     } else {
-                        if let Some(width) =
-                            (window.physical_width() / 2).checked_sub(window_size.x / 2)
-                        {
-                            UVec2::new(width, 0)
-                        } else {
-                            UVec2::ZERO
-                        }
+                        UVec2::ZERO
                     };
 
-                    texture_transform.scale =
-                        Vec3::new(scale_width as f32, scale_height as f32, 1.0);
+                    texture_transform.scale = Vec3::new(scale_width, scale_height, 1.0);
 
                     camera.viewport = Some(Viewport {
                         physical_size: window_size,

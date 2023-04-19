@@ -174,8 +174,8 @@ impl CameraProjection for ScaledPixelProjection {
             self.zoom = self.zoom.round();
         }
 
-        let actual_width = width / (self.zoom as f32);
-        let actual_height = height / (self.zoom as f32);
+        let actual_width = width / (self.zoom);
+        let actual_height = height / (self.zoom);
         if self.centered {
             self.left = -((actual_width as i32) / 2) as f32;
             self.right = self.left + actual_width;
@@ -220,7 +220,7 @@ pub fn update_scaled_viewport(
         for (mut camera, projection) in camera_query.iter_mut() {
             let screen_width = projection.desired_width.map(|w| w as f32).unwrap_or(0.0);
             let screen_height = projection.desired_height.map(|h| h as f32).unwrap_or(0.0);
-            let aspect_ratio = screen_width as f32 / screen_height as f32;
+            let aspect_ratio = screen_width / screen_height;
             let window_size: UVec2 = if window.physical_height() > window.physical_width()
                 || window.physical_height() as f32 * aspect_ratio > window.physical_width() as f32
             {
@@ -235,8 +235,6 @@ pub fn update_scaled_viewport(
                 )
             };
 
-            // let scale_width = window_size.x as f32 / screen_width as f32;
-            // let scale_height = window_size.y as f32 / screen_height as f32;
             let window_position: UVec2 = if window.physical_height() > window.physical_width()
                 || window.physical_height() as f32 * aspect_ratio > window.physical_width() as f32
             {
@@ -246,13 +244,13 @@ pub fn update_scaled_viewport(
                 } else {
                     UVec2::ZERO
                 }
+            } else if let Some(width) = (window.physical_width() / 2).checked_sub(window_size.x / 2)
+            {
+                UVec2::new(width, 0)
             } else {
-                if let Some(width) = (window.physical_width() / 2).checked_sub(window_size.x / 2) {
-                    UVec2::new(width, 0)
-                } else {
-                    UVec2::ZERO
-                }
+                UVec2::ZERO
             };
+
             camera.viewport = Some(Viewport {
                 physical_size: window_size,
                 physical_position: window_position,

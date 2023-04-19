@@ -14,19 +14,20 @@ fn main() {
 pub struct Rotate;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            color: Color::WHITE,
-            custom_size: Some(Vec2::splat(400.0)),
+    commands
+        .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
+        .insert(SpriteBundle {
+            sprite: Sprite {
+                color: Color::WHITE,
+                custom_size: Some(Vec2::splat(400.0)),
 
+                ..default()
+            },
+            transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
             ..default()
-        },
-        transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
-        ..default()
-    });
+        });
 
     // We can also use from_zoom to get a fixed pixel size instead of scaling a virtual window
-    commands.spawn(ScaledPixelCamera::from_resolution(256, 224, true));
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("tile_0006.png"),
