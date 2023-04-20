@@ -17,6 +17,10 @@ pub struct Rotate;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // We can also use from_zoom to get a fixed pixel size instead of scaling a virtual window
+    commands.spawn(PixelCursor::new(
+        asset_server.load("cursor.png"),
+        asset_server.load("cursor_hover.png"),
+    ));
     commands
         .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
         // .spawn(ScaledPixelCamera::from_zoom(4.0))
@@ -76,8 +80,10 @@ fn rotate_sprite(mut rotate_query: Query<&mut Transform, With<Rotate>>, time: Re
 }
 
 // Both cameras use a cameratag for easy selection of the right camera
+// We also can show that we can manually toggle cursor state
 fn movement(
     mut transform_query: Query<&mut Transform, With<PixelCameraTag>>,
+    mut cursor_query: Query<&mut PixelCursor>,
     keys: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
@@ -94,6 +100,12 @@ fn movement(
         }
         if keys.pressed(KeyCode::A) {
             transform.translation.x -= 50.0 * dt;
+        }
+    }
+
+    if keys.just_pressed(KeyCode::Space) {
+        if let Ok(mut cursor) = cursor_query.get_single_mut() {
+            cursor.hovering = !cursor.hovering;
         }
     }
 }

@@ -6,7 +6,23 @@ use crate::{
 };
 
 #[derive(Component)]
-pub struct CursorSprite;
+pub struct PixelCursor {
+    pub normal: Handle<Image>,
+    pub hover: Handle<Image>,
+    pub init: bool,
+    pub hovering: bool,
+}
+
+impl PixelCursor {
+    pub fn new(normal: Handle<Image>, hover: Handle<Image>) -> Self {
+        Self {
+            normal,
+            hover,
+            init: false,
+            hovering: false,
+        }
+    }
+}
 
 #[derive(Resource, Default, Deref, DerefMut)]
 pub struct WorldCursorPostion(pub Vec2);
@@ -83,30 +99,53 @@ pub fn update_world_cursor(
 }
 
 pub fn update_cursor(
-    mut cursor_query: Query<&mut Transform, With<CursorSprite>>,
+    mut cursor_query: Query<(&mut Transform, &mut PixelCursor, &mut Handle<Image>)>,
     camera_q: Query<(&Camera, &GlobalTransform), With<CursorCameraTag>>,
     windows: Query<&Window, With<PrimaryWindow>>,
     pixel_query: Query<&ScaledPixelProjection>,
     touches: Res<Touches>,
+    interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
 ) {
-    if let Ok(window) = windows.get_single() {
-        if let Ok(mut cursor_transform) = cursor_query.get_single_mut() {
-            if let Ok((camera, transform)) = camera_q.get_single() {
-                if let Ok(pixel) = pixel_query.get_single() {
-                    if let Some(world_position) = touches.iter().next().and_then(|cursor| {
-                        let mut cursor = cursor.position();
-                        cursor.y = window.height() - cursor.y;
+    if let Ok((mut cursor_transform, mut cursor_sprite, mut cursor_handle)) =
+        cursor_query.get_single_mut()
+    {
+        for interaction in interaction_query.iter() {
+            match *interaction {
+                Interaction::Clicked => {
+                    cursor_sprite.hovering = true;
+                }
+                Interaction::Hovered => {
+                    cursor_sprite.hovering = true;
+                }
+                Interaction::None => {
+                    cursor_sprite.hovering = false;
+                }
+            }
+        }
+        if let Ok(window) = windows.get_single() {
+            if cursor_sprite.init {
+                if cursor_sprite.hovering && *cursor_handle != cursor_sprite.hover {
+                    *cursor_handle = cursor_sprite.hover.clone();
+                } else if *cursor_handle != cursor_sprite.normal && !cursor_sprite.hovering {
+                    *cursor_handle = cursor_sprite.normal.clone();
+                }
+                if let Ok((camera, transform)) = camera_q.get_single() {
+                    if let Ok(pixel) = pixel_query.get_single() {
+                        if let Some(world_position) = touches.iter().next().and_then(|cursor| {
+                            let mut cursor = cursor.position();
+                            cursor.y = window.height() - cursor.y;
 
-                        camera.viewport_to_world_2d(transform, cursor)
-                    }) {
-                        cursor_transform.translation = world_position.extend(0.0);
-                        cursor_transform.scale = Vec2::splat(pixel.zoom).extend(1.0);
-                    } else if let Some(world_position) = window
-                        .cursor_position()
-                        .and_then(|cursor| camera.viewport_to_world_2d(transform, cursor))
-                    {
-                        cursor_transform.translation = world_position.extend(0.0);
-                        cursor_transform.scale = Vec2::splat(pixel.zoom).extend(1.0);
+                            camera.viewport_to_world_2d(transform, cursor)
+                        }) {
+                            cursor_transform.translation = world_position.extend(0.0);
+                            cursor_transform.scale = Vec2::splat(pixel.zoom).extend(1.0);
+                        } else if let Some(world_position) = window
+                            .cursor_position()
+                            .and_then(|cursor| camera.viewport_to_world_2d(transform, cursor))
+                        {
+                            cursor_transform.translation = world_position.extend(0.0);
+                            cursor_transform.scale = Vec2::splat(pixel.zoom).extend(1.0);
+                        }
                     }
                 }
             }
@@ -116,20 +155,24 @@ pub fn update_cursor(
 
 pub fn add_cursor(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     mut windows: Query<&mut Window, With<PrimaryWindow>>,
+    mut cursor_query: Query<(&mut PixelCursor, Entity)>,
 ) {
     let cursor_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 3) as u8);
-    if let Ok(mut window) = windows.get_single_mut() {
-        window.cursor.visible = false;
-        commands.spawn((
-            SpriteBundle {
-                texture: asset_server.load("cursor.png"),
-                transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
-                ..Default::default()
-            },
-            CursorSprite,
-            cursor_layer,
-        ));
+    if let Ok((mut cursor_sprite, entity)) = cursor_query.get_single_mut() {
+        if !cursor_sprite.init {
+            if let Ok(mut window) = windows.get_single_mut() {
+                window.cursor.visible = false;
+                commands.entity(entity).insert((
+                    SpriteBundle {
+                        texture: cursor_sprite.normal.clone(),
+                        transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
+                        ..Default::default()
+                    },
+                    cursor_layer,
+                ));
+                cursor_sprite.init = true;
+            }
+        }
     }
 }

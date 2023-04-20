@@ -8,7 +8,6 @@ pub struct PixelCursorPlugin;
 impl Plugin for PixelCursorPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(WorldCursorPostion::default())
-            .add_startup_system(add_cursor)
-            .add_systems((update_cursor, update_world_cursor));
+            .add_systems((update_cursor, update_world_cursor, add_cursor));
     }
 }
