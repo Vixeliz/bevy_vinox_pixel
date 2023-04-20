@@ -8,7 +8,7 @@ use bevy::render::view::RenderLayers;
 use bevy::window::PrimaryWindow;
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
-use crate::plugin::PixelCameraTag;
+use crate::prelude::PixelCameraTag;
 
 /// This is for cameras that you want things to render to a texture then be scaled.
 /// size is the size of the virtual canvas and fixed is whether or not to let it grow in a certain direction.

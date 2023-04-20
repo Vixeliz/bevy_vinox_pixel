@@ -4,7 +4,7 @@ use bevy::render::primitives::Frustum;
 use bevy::render::view::VisibleEntities;
 use bevy::window::PrimaryWindow;
 
-use crate::plugin::PixelCameraTag;
+use crate::prelude::PixelCameraTag;
 
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
 /// The advantage of this camera is smoother scrolling, rotation, etc

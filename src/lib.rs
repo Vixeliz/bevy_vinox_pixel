@@ -1,11 +1,11 @@
-pub mod modern;
+pub mod camera;
+pub mod cursor;
 pub mod plugin;
-pub mod scaled;
-pub mod texture;
 
 pub mod prelude {
-    pub use crate::plugin::PixelCameraTag;
-    pub use crate::plugin::PixelPlugin;
-    pub use crate::scaled::ScaledPixelCamera;
-    pub use crate::texture::TexturePixelCamera;
+    pub use crate::camera::plugin::PixelCameraPlugin;
+    pub use crate::camera::plugin::PixelCameraTag;
+    pub use crate::camera::scaled::ScaledPixelCamera;
+    pub use crate::camera::texture::TexturePixelCamera;
+    pub use crate::plugin::PixelPlugins;
 }

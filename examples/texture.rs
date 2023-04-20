@@ -4,7 +4,7 @@ use bevy_pixel::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugin(PixelPlugin)
+        .add_plugins(PixelPlugins)
         .add_startup_system(setup)
         .add_system(movement)
         .run();

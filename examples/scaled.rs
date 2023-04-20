@@ -4,7 +4,7 @@ use bevy_pixel::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugin(PixelPlugin)
+        .add_plugins(PixelPlugins)
         .add_startup_system(setup)
         .add_systems((rotate_sprite, movement))
         .run();
@@ -31,6 +31,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("tile_0006.png"),
+            transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
             ..Default::default()
         },
         Rotate,
