@@ -5,6 +5,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(PixelPlugins)
+        // Cursor only supports scaled at the moment
+        .add_plugin(PixelCursorPlugin)
         .add_startup_system(setup)
         .add_systems((rotate_sprite, movement))
         .run();
@@ -14,9 +16,10 @@ fn main() {
 pub struct Rotate;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // We can also use from_zoom to get a fixed pixel size instead of scaling a virtual window
     commands
-        // .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
-        .spawn(ScaledPixelCamera::from_zoom(4.0))
+        .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
+        // .spawn(ScaledPixelCamera::from_zoom(4.0))
         .insert(SpriteBundle {
             sprite: Sprite {
                 color: Color::WHITE,
@@ -28,7 +31,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         });
 
-    // We can also use from_zoom to get a fixed pixel size instead of scaling a virtual window
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("tile_0006.png"),
