@@ -5,6 +5,9 @@
 
 A crate for pixel art games in bevy.
 
+:warning: **IF YOU WANT TO USE THE TEXTURED CAMERA**: Be warned this feature is considering being dropped in favor of expanding the scaled camera to support usecases of the texture version!
+
+## Goals
 The goal of this crate is to provide tools commonly needed in pixel art games in an easy to use crate.
 Here is a list of features(Indicated by being crossed out) and planned features:
 * ~Cameras~ _I need to cleanup the texture version a little bit though_
