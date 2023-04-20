@@ -1,7 +1,7 @@
-### Bevy Pixel
+### Bevy Vinox Pixel
 [![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking)
-[![crates.io](https://img.shields.io/crates/v/bevy_awesome_plugin)](https://crates.io/crates/bevy_pixel)
-[![docs.rs](https://docs.rs/bevy_awesome_plugin/badge.svg)](https://docs.rs/bevy_pixel)
+[![crates.io](https://img.shields.io/crates/v/bevy_vinox_pixel)](https://crates.io/crates/bevy_vinox_pixel)
+[![docs.rs](https://docs.rs/bevy_vinox_pixel/badge.svg)](https://docs.rs/bevy_vinox_pixel)
 
 A crate for pixel art games in bevy.
 
