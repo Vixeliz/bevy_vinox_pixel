@@ -1,10 +1,13 @@
+use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use bevy::render::camera::{Camera, CameraProjection, CameraRenderGraph, Viewport};
 use bevy::render::primitives::Frustum;
-use bevy::render::view::VisibleEntities;
+use bevy::render::view::{RenderLayers, VisibleEntities};
 use bevy::window::PrimaryWindow;
 
 use crate::prelude::PixelCameraTag;
+
+use super::plugin::UiCameraTag;
 
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
 /// The advantage of this camera is smoother scrolling, rotation, etc
@@ -19,6 +22,7 @@ pub struct ScaledPixelCamera {
     pub transform: Transform,
     pub global_transform: GlobalTransform,
     pub camera_2d: Camera2d,
+    pub camera_config: UiCameraConfig,
 }
 
 impl Default for ScaledPixelCamera {
@@ -50,6 +54,7 @@ impl ScaledPixelCamera {
             camera: Camera::default(),
             camera_tag: PixelCameraTag,
             camera_2d: Camera2d::default(),
+            camera_config: UiCameraConfig { show_ui: false },
         }
     }
 
@@ -135,6 +140,8 @@ pub struct ScaledPixelProjection {
 
     /// If true pixels don't have to be an integer value and can be instead a float
     pub imperfect: bool,
+
+    pub init: bool,
 }
 
 impl CameraProjection for ScaledPixelProjection {
@@ -208,10 +215,37 @@ impl Default for ScaledPixelProjection {
             zoom: 1.0,
             centered: true,
             imperfect: false,
+            init: false,
         }
     }
 }
 
+pub fn setup_camera(
+    mut commands: Commands,
+    mut camera: Query<(&mut ScaledPixelProjection, Entity)>,
+) {
+    if let Ok((mut projection, _entity)) = camera.get_single_mut() {
+        if !projection.init {
+            projection.init = true;
+            let ui_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 2) as u8);
+            commands.spawn((
+                Camera2dBundle {
+                    camera: Camera {
+                        // renders after the camera that draws the texture
+                        order: 2,
+                        ..default()
+                    },
+                    camera_2d: Camera2d {
+                        clear_color: ClearColorConfig::None,
+                    },
+                    ..Default::default()
+                },
+                UiCameraTag,
+                ui_layer,
+            ));
+        }
+    }
+}
 pub fn update_scaled_viewport(
     mut camera_query: Query<(&mut Camera, &ScaledPixelProjection)>,
     mut windows: Query<&mut Window, With<PrimaryWindow>>,

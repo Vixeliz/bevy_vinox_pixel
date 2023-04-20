@@ -10,6 +10,8 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
 use crate::prelude::PixelCameraTag;
 
+use super::plugin::UiCameraTag;
+
 /// This is for cameras that you want things to render to a texture then be scaled.
 /// size is the size of the virtual canvas and fixed is whether or not to let it grow in a certain direction.
 /// Ie a fixed height camera but is allowed to scale horizontally would go like fixed_axis: Some(false). the bool is for which axis. false being its fixed vertically true being fixed horizontally
@@ -135,6 +137,7 @@ pub fn setup_camera(
                 .insert((PixelCameraTag, UiCameraConfig { show_ui: false }));
 
             let render_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 1) as u8);
+            let ui_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 2) as u8);
 
             let quad_handle = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
                 size.width as f32,
@@ -174,9 +177,23 @@ pub fn setup_camera(
                 },
                 render_layer,
                 FinalCameraTag,
+                UiCameraConfig { show_ui: false },
             ));
-
-            // commands.entity(entity).push_children(&[final_camera]);
+            commands.spawn((
+                Camera2dBundle {
+                    camera: Camera {
+                        // renders after the camera that draws the texture
+                        order: 2,
+                        ..default()
+                    },
+                    camera_2d: Camera2d {
+                        clear_color: ClearColorConfig::None,
+                    },
+                    ..Default::default()
+                },
+                UiCameraTag,
+                ui_layer,
+            ));
         }
     }
 }
