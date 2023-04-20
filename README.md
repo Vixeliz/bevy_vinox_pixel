@@ -17,7 +17,7 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 * Pixelated cursor support.(Partially done works for the scaled camera)
 * Limited palettes that can be automatically assigned to any colors by finding the closest match or map from one palette to another.
 * A simple aabb(and possibly sat) physics engine as a lot of games don't need complicated physics.
-* A more abstracted layer system so you don't have to manually choose z depths.
+* ~Layers A more abstracted layer system so you don't have to manually choose z depths.~ _may change if bevy introduces a better system_
 * Optional limitations? Such as an option to limit sprite count to emulate more limited systems.
 * Optional abstracted positions. Ie a px position which will always correspond to the pixel grid. And another type subpxposition. (This idea is straight from seldom_pixel)
 
