@@ -20,24 +20,52 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
         // .spawn(ScaledPixelCamera::from_zoom(4.0))
-        .insert(SpriteBundle {
-            sprite: Sprite {
-                color: Color::WHITE,
-                custom_size: Some(Vec2::splat(400.0)),
+        .insert((
+            SpriteBundle {
+                sprite: Sprite {
+                    color: Color::WHITE,
+                    custom_size: Some(Vec2::splat(400.0)),
 
+                    ..default()
+                },
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
-            ..default()
-        });
+            PixelLayer::Background(0),
+        ));
 
     commands.spawn((
         SpriteBundle {
             texture: asset_server.load("tile_0006.png"),
-            transform: Transform::from_translation(Vec3::new(0., 0., 0.0)),
             ..Default::default()
         },
         Rotate,
+        PixelLayer::Foreground(1),
+    ));
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::PURPLE,
+                custom_size: Some(Vec2::splat(16.0)),
+
+                ..default()
+            },
+            transform: Transform::from_xyz(-8.0, 0.0, 0.0),
+            ..Default::default()
+        },
+        PixelLayer::Foreground(2),
+    ));
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::BLUE,
+                custom_size: Some(Vec2::splat(16.0)),
+
+                ..default()
+            },
+            transform: Transform::from_xyz(8.0, 0.0, 0.0),
+            ..Default::default()
+        },
+        PixelLayer::Foreground(0),
     ));
 }
 
