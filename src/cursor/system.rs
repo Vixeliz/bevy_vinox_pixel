@@ -87,12 +87,21 @@ pub fn update_cursor(
     camera_q: Query<(&Camera, &GlobalTransform), With<CursorCameraTag>>,
     windows: Query<&Window, With<PrimaryWindow>>,
     pixel_query: Query<&ScaledPixelProjection>,
+    touches: Res<Touches>,
 ) {
     if let Ok(window) = windows.get_single() {
         if let Ok(mut cursor_transform) = cursor_query.get_single_mut() {
             if let Ok((camera, transform)) = camera_q.get_single() {
                 if let Ok(pixel) = pixel_query.get_single() {
-                    if let Some(world_position) = window
+                    if let Some(world_position) = touches.iter().next().and_then(|cursor| {
+                        let mut cursor = cursor.position();
+                        cursor.y = window.height() - cursor.y;
+
+                        camera.viewport_to_world_2d(transform, cursor)
+                    }) {
+                        cursor_transform.translation = world_position.extend(0.0);
+                        cursor_transform.scale = Vec2::splat(pixel.zoom).extend(1.0);
+                    } else if let Some(world_position) = window
                         .cursor_position()
                         .and_then(|cursor| camera.viewport_to_world_2d(transform, cursor))
                     {
