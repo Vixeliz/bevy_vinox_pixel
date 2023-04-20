@@ -7,7 +7,7 @@ use bevy::window::PrimaryWindow;
 
 use crate::prelude::PixelCameraTag;
 
-use super::plugin::UiCameraTag;
+use super::plugin::{CursorCameraTag, UiCameraTag};
 
 /// This is a camera that scaled up pixels and aligns them to a virtual grid. This is tooken from bevy_pixel_camera
 /// The advantage of this camera is smoother scrolling, rotation, etc
@@ -242,6 +242,23 @@ pub fn setup_camera(
                 },
                 UiCameraTag,
                 ui_layer,
+            ));
+            let cursor_layer = RenderLayers::layer((RenderLayers::TOTAL_LAYERS - 3) as u8);
+            commands.spawn((
+                Camera2dBundle {
+                    camera: Camera {
+                        // renders after the camera that draws the texture
+                        order: 3,
+                        ..default()
+                    },
+                    camera_2d: Camera2d {
+                        clear_color: ClearColorConfig::None,
+                    },
+                    ..Default::default()
+                },
+                UiCameraConfig { show_ui: false },
+                CursorCameraTag,
+                cursor_layer,
             ));
         }
     }

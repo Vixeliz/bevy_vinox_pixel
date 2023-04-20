@@ -8,6 +8,9 @@ pub struct PixelCameraTag;
 #[derive(Component)]
 pub struct UiCameraTag;
 
+#[derive(Component)]
+pub struct CursorCameraTag;
+
 pub struct PixelCameraPlugin;
 
 impl Plugin for PixelCameraPlugin {
