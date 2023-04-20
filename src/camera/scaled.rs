@@ -251,11 +251,13 @@ pub fn update_scaled_viewport(
                 UVec2::ZERO
             };
 
-            camera.viewport = Some(Viewport {
-                physical_size: window_size,
-                physical_position: window_position,
-                ..Default::default()
-            });
+            if window_size.x != 0 && window_size.y != 0 {
+                camera.viewport = Some(Viewport {
+                    physical_size: window_size,
+                    physical_position: window_position,
+                    ..Default::default()
+                });
+            }
         }
     }
 }

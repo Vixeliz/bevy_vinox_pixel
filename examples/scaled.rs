@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_pixel::prelude::*;
+use bevy_vinox_pixel::prelude::*;
 
 fn main() {
     App::new()
@@ -15,7 +15,8 @@ pub struct Rotate;
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
-        .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
+        // .spawn(ScaledPixelCamera::from_resolution(256, 224, true))
+        .spawn(ScaledPixelCamera::from_zoom(4.0))
         .insert(SpriteBundle {
             sprite: Sprite {
                 color: Color::WHITE,

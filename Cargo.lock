@@ -646,13 +646,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_pixel"
-version = "0.1.0"
-dependencies = [
- "bevy",
-]
-
-[[package]]
 name = "bevy_ptr"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -918,6 +911,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "bevy_vinox_pixel"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_pixel::prelude::*;
+use bevy_vinox_pixel::prelude::*;
 
 fn main() {
     App::new()
