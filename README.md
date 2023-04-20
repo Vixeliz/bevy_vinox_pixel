@@ -11,7 +11,7 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 * Runtime Pixelated Sprites(such as 3d objects or procedural generated assets)
 * Pixel ui system for games that need it.
 * Tilemaps via bevy_ecs_tilemap?
-* Pixelated cursor support.
+* Pixelated cursor support.(Partially done works for the scaled camera)
 * Limited palettes that can be automatically assigned to any colors by finding the closest match or map from one palette to another.
 * A simple aabb(and possibly sat) physics engine as a lot of games don't need complicated physics.
 * A more abstracted layer system so you don't have to manually choose z depths.
@@ -20,5 +20,13 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 
 Please open issues for more feature suggestions if you have any!
 
+## Thanks
 Thanks to [bevy_pixel_camera](https://github.com/drakmaniso/bevy_pixel_camera) for both the approach shown there and for how to setup a custom camera.
 also thanks to [seldom_pixel](https://github.com/Seldom-SE/seldom_pixel) for some of the ideas 
+
+## Version Support
+| bevy | bevy_vinox_pixel |
+|------|------------------|
+| 0.10 | 0.0.1            |
+
+
