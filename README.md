@@ -13,7 +13,6 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 * ~Cameras~ _I need to cleanup the texture version a little bit though_
 * Runtime Pixelated Sprites(such as 3d objects or procedural generated assets)
 * Pixel ui system for games that need it.
-* Tilemaps via bevy_ecs_tilemap?
 * ~Pixelated cursor support.~(Technically partially done since it only works for the scaled camera. However since the texture camera may be dropped we are crossing it off)
 * Limited palettes that can be automatically assigned to any colors by finding the closest match or map from one palette to another.
 * ~Layers A more abstracted layer system so you don't have to manually choose z depths.~ _may change if bevy introduces a better system_
@@ -21,6 +20,7 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 * Optional abstracted positions. Ie a px position which will always correspond to the pixel grid. And another type subpxposition. (This idea is straight from seldom_pixel)
 
 ## No longer planned or on a backburner
+* Tilemaps via bevy_ecs_tilemap?
 * A simple aabb(and possibly sat) physics engine as a lot of games don't need complicated physics.
 
 Collisions most likely won't come for anything more than aabbs but even those may not come. After some thinking in 2d rapier should be good enough in most cases.
