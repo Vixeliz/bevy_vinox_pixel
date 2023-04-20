@@ -15,6 +15,7 @@ pub fn update_world_cursor(
     mut world_cursor: ResMut<WorldCursorPostion>,
     mut notified: Local<bool>,
     mut cursor_query: Query<&mut Visibility, With<CursorSprite>>,
+    touches: Option<Res<Touches>>,
 ) {
     if let Ok((camera, camera_transform)) = camera_q.get_single() {
         if let Ok(mut cursor_visibility) = cursor_query.get_single_mut() {
@@ -24,7 +25,12 @@ pub fn update_world_cursor(
                         *notified = true;
                         panic!("Texture cameras do not support the cursor yet!");
                     }
-                } else if let Some(physical_cursor) = window.cursor_position() {
+                } else if let Some(mut physical_cursor) = window.cursor_position() {
+                    if let Some(touches) = touches {
+                        if let Some(touch) = touches.iter().next() {
+                            physical_cursor = touch.position();
+                        }
+                    }
                     *cursor_visibility = Visibility::Visible;
                     if let Some((viewport_min, viewport_max)) = camera.logical_viewport_rect() {
                         let cursor_x = physical_cursor.x.clamp(viewport_min.x, viewport_max.x);
