@@ -6,7 +6,7 @@
 A crate for pixel art games in bevy.
 
 :warning: **IF YOU WANT TO USE THE TEXTURED CAMERA**: Be warned this feature is considering being dropped in favor of expanding the scaled camera to support usecases of the texture version!
-:warning: **MAKE SURE TO BE CAREFUL WHEN USING LIMITED SPRITES SPRITES WILL RANDOMLY FLASH IF RANDOM MODE IS TURNED ON**: I'm not responsible for anything that may happen if you ignore this warning so be warned!
+:warning: **MAKE SURE TO BE CAREFUL WHEN USING LIMITED SPRITES SPRITES WILL RANDOMLY FLASH IF RANDOM MODE IS TURNED ON OR AT ALL AS ADDING ENTITIES OR REMOVING MAY CAUSE THE NON RANDOM VERSION TO ALSO FLICKER WHEN CHANGED**: I'm not responsible for anything that may happen if you ignore this warning so be warned!
 
 ## Goals
 The goal of this crate is to provide tools commonly needed in pixel art games in an easy to use crate.
