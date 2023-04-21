@@ -16,7 +16,8 @@ exclude = [
 
 [dependencies]
 bevy = { version = "0.10.1", default-features = false, features = ["bevy_asset", "bevy_core_pipeline", "bevy_render", "bevy_sprite", "bevy_ui", "png"] }
+rand = "0.8.5"
 
-[dev_dependencies]
+[dev-dependencies]
 bevy = "0.10.1"
 

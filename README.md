@@ -6,6 +6,7 @@
 A crate for pixel art games in bevy.
 
 :warning: **IF YOU WANT TO USE THE TEXTURED CAMERA**: Be warned this feature is considering being dropped in favor of expanding the scaled camera to support usecases of the texture version!
+:warning: **MAKE SURE TO BE CAREFUL WHEN USING LIMITED SPRITES SPRITES WILL RANDOMLY FLASH IF RANDOM MODE IS TURNED ON**: I'm not responsible for anything that may happen if you ignore this warning so be warned!
 
 ## Goals
 The goal of this crate is to provide tools commonly needed in pixel art games in an easy to use crate.
@@ -14,7 +15,7 @@ Here is a list of features(Indicated by being crossed out) and planned features:
 * ~Pixelated cursor support.~(Technically partially done since it only works for the scaled camera. However since the texture camera may be dropped we are crossing it off)
 * Limited palettes that can be automatically assigned to any colors by finding the closest match or map from one palette to another.
 * ~Layers A more abstracted layer system so you don't have to manually choose z depths.~ _may change if bevy introduces a better system_
-* Optional limitations? Such as an option to limit sprite count to emulate more limited systems.
+* ~Optional limitations? Such as an option to limit sprite count to emulate more limited systems.~
 * Optional abstracted positions. Ie a px position which will always correspond to the pixel grid. And another type subpxposition. (This idea is straight from seldom_pixel)
 
 ## No longer planned or on a backburner

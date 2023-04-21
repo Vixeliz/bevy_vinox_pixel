@@ -1,6 +1,7 @@
 pub mod camera;
 pub mod cursor;
 pub mod layers;
+pub mod limit;
 pub mod plugin;
 
 pub mod prelude {
@@ -12,5 +13,6 @@ pub mod prelude {
     pub use crate::cursor::system::PixelCursor;
     pub use crate::layers::plugin::PixelLayerPlugin;
     pub use crate::layers::system::PixelLayer;
+    pub use crate::limit::plugin::PixelLimPlugin;
     pub use crate::plugin::PixelPlugins;
 }
