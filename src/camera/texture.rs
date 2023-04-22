@@ -21,6 +21,7 @@ pub struct TexturePixelCamera {
     pub size: UVec2,
     pub fixed_axis: Option<bool>,
     pub clear_color: Color,
+    pub hdr: bool,
     init: bool,
 }
 
@@ -37,17 +38,19 @@ impl Default for TexturePixelCamera {
             fixed_axis: None,
             clear_color: Color::WHITE,
             init: false,
+            hdr: false,
         }
     }
 }
 
 impl TexturePixelCamera {
-    pub fn new(size: UVec2, axis: Option<bool>, clear_color: Color) -> Self {
+    pub fn new(size: UVec2, axis: Option<bool>, clear_color: Color, hdr: bool) -> Self {
         Self {
             size,
             fixed_axis: axis,
             clear_color,
             init: false,
+            hdr,
         }
     }
 
@@ -57,6 +60,7 @@ impl TexturePixelCamera {
             fixed_axis: Some(false),
             clear_color: Color::WHITE,
             init: false,
+            hdr: false,
         }
     }
     pub fn from_width(width: u32) -> Self {
@@ -65,6 +69,7 @@ impl TexturePixelCamera {
             fixed_axis: Some(true),
             clear_color: Color::WHITE,
             init: false,
+            hdr: false,
         }
     }
     pub fn from_resolution(width: u32, height: u32) -> Self {
@@ -73,6 +78,7 @@ impl TexturePixelCamera {
             fixed_axis: None,
             clear_color: Color::WHITE,
             init: false,
+            hdr: false,
         }
     }
 }
@@ -117,9 +123,19 @@ pub fn setup_camera(
             let image_handle = images.add(image);
 
             // The camera we are actually rendering to
-            commands.entity(entity).insert((
-                PixelCameraTag,
-                UiCameraConfig { show_ui: false },
+            let camera = if pixel_camera.hdr {
+                Camera2dBundle {
+                    camera: Camera {
+                        target: RenderTarget::Image(image_handle.clone()),
+                        hdr: true,
+                        ..default()
+                    },
+                    camera_2d: Camera2d {
+                        clear_color: ClearColorConfig::Custom(pixel_camera.clear_color),
+                    },
+                    ..Default::default()
+                }
+            } else {
                 Camera2dBundle {
                     camera: Camera {
                         target: RenderTarget::Image(image_handle.clone()),
@@ -129,7 +145,12 @@ pub fn setup_camera(
                         clear_color: ClearColorConfig::Custom(pixel_camera.clear_color),
                     },
                     ..Default::default()
-                },
+                }
+            };
+            commands.entity(entity).insert((
+                PixelCameraTag,
+                UiCameraConfig { show_ui: false },
+                camera,
             ));
 
             commands

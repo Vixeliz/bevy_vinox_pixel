@@ -44,6 +44,14 @@ impl ScaledPixelCamera {
             &transform.back(),
             pixel_projection.far(),
         );
+        let camera = if pixel_projection.hdr {
+            Camera {
+                hdr: true,
+                ..default()
+            }
+        } else {
+            Camera::default()
+        };
         Self {
             camera_render_graph: CameraRenderGraph::new(bevy::core_pipeline::core_2d::graph::NAME),
             pixel_projection,
@@ -51,7 +59,7 @@ impl ScaledPixelCamera {
             frustum,
             transform,
             global_transform: Default::default(),
-            camera: Camera::default(),
+            camera,
             camera_tag: PixelCameraTag,
             camera_2d: Camera2d::default(),
             camera_config: UiCameraConfig { show_ui: false },
@@ -141,6 +149,8 @@ pub struct ScaledPixelProjection {
     /// If true pixels don't have to be an integer value and can be instead a float
     pub imperfect: bool,
 
+    pub hdr: bool,
+
     pub init: bool,
 }
 
@@ -216,6 +226,7 @@ impl Default for ScaledPixelProjection {
             centered: true,
             imperfect: false,
             init: false,
+            hdr: false,
         }
     }
 }
