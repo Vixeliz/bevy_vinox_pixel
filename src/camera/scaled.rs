@@ -226,7 +226,7 @@ impl Default for ScaledPixelProjection {
             centered: true,
             imperfect: false,
             init: false,
-            hdr: false,
+            hdr: true,
         }
     }
 }
@@ -244,6 +244,7 @@ pub fn setup_camera(
                     camera: Camera {
                         // renders after the camera that draws the texture
                         order: 2,
+                        hdr: projection.hdr,
                         ..default()
                     },
                     camera_2d: Camera2d {
@@ -260,6 +261,7 @@ pub fn setup_camera(
                     camera: Camera {
                         // renders after the camera that draws the texture
                         order: 3,
+                        hdr: projection.hdr,
                         ..default()
                     },
                     camera_2d: Camera2d {
