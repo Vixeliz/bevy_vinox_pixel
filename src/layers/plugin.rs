@@ -1,12 +1,18 @@
 use bevy::prelude::*;
+use crate::prelude::PixelLayer;
+use extol_sprite_layer::*;
 
-use super::system::update_z_coordinate_based_on_layer;
-
-/// The plugin that handles everything related to layers
-pub struct PixelLayerPlugin;
+pub struct PixelLayerPlugin {
+    pub y_sort: bool,
+}
 
 impl Plugin for PixelLayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(update_z_coordinate_based_on_layer);
+        app.add_plugin(SpriteLayerPlugin::<PixelLayer>::default());
+        if self.y_sort {
+            app.insert_resource(SpriteLayerOptions { y_sort: true });
+        } else {
+            app.insert_resource(SpriteLayerOptions { y_sort: false });
+        }
     }
 }

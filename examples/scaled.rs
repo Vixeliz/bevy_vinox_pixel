@@ -4,7 +4,7 @@ use bevy_vinox_pixel::{plugin::PixelSprite, prelude::*};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugins(PixelPlugins)
+        .add_plugins(PixelPlugins::default())
         // Cursor only supports scaled at the moment
         .add_plugin(PixelCursorPlugin)
         .add_plugin(PixelLimPlugin::new(4, false))
