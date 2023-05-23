@@ -5,6 +5,8 @@
 
 A crate for pixel art games in bevy.
 
+:warning: **THIS CRATE IS NOT BEING DEVELOPED FURTHER**: It may be worked on in the future but rn this is incomplete and not maintained
+
 :warning: **IF YOU WANT TO USE THE TEXTURED CAMERA**: Be warned this feature is considering being dropped in favor of expanding the scaled camera to support usecases of the texture version!
 :warning: 
 
